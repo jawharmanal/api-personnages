@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Appel API FastAPI</title>
+</head>
+<body>
+  <h1>Liste des personnages</h1>
+  <button onclick="chargerPersonnages()">Charger</button>
+  <ul id="liste"></ul>
+
+  <script>
+    async function chargerPersonnages() {
+      const reponse = await fetch("http://localhost:8000/personnages", {
+        method: "GET",
+        headers: {
+          "token": "SECRET123"
+        }
+      });
+
+      if (reponse.ok) {
+        const data = await reponse.json();
+        const ul = document.getElementById("liste");
+        ul.innerHTML = ""; // vider la liste avant de remplir
+        data.forEach(p => {
+          const li = document.createElement("li");
+          li.textContent = `${p.nom} (${p.equipe})`;
+          ul.appendChild(li);
+        });
+      } else {
+        alert("Erreur : " + reponse.status);
+      }
+    }
+  </script>
+</body>
+</html>
