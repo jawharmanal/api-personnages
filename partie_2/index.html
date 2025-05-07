@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"> <!-- Encodage UTF-8 pour bien gérer les accents -->
+  <title>API Personnages</title> <!-- Titre de la page -->
+</head>
+<body>
+  <h1>Liste des personnages</h1> <!-- Titre visible sur la page -->
+  
+  <!-- Bouton pour déclencher l'appel à l'API -->
+  <button onclick="charger()">Charger les personnages</button>
+
+  <!-- Élément HTML pour afficher la liste -->
+  <ul id="liste"></ul>
+
+  <script>
+    // Fonction appelée quand on clique sur le bouton
+    async function charger() {
+      try {
+        // Appel à l’API FastAPI en GET, avec le token dans les headers
+        const response = await fetch("http://localhost:8000/personnages", {
+          method: "GET",
+          headers: {
+            "token": "SECRET123"  // Le même token que dans ton backend FastAPI
+          }
+        });
+
+        // Si la requête a réussi (status HTTP 200)
+        if (response.ok) {
+          // On convertit la réponse en JSON (liste de personnages)
+          const data = await response.json();
+
+          // On récupère l’élément HTML <ul id="liste">
+          const liste = document.getElementById("liste");
+
+          // On vide la liste avant d’ajouter les éléments
+          liste.innerHTML = "";
+
+          // Pour chaque personnage reçu, on crée un <li> avec nom + équipe
+          data.forEach(p => {
+            const li = document.createElement("li");         // Créer un nouvel élément <li>
+            li.textContent = `${p.nom} (${p.equipe})`;       // Ex: Olivier Atton (Nankatsu)
+            liste.appendChild(li);                           // Ajouter le <li> dans le <ul>
+          });
+        } else {
+          // Si la réponse n'est pas 200 (ex: 401), on affiche une alerte
+          alert("Erreur API : " + response.status);
+        }
+      } catch (err) {
+        // Si une erreur réseau se produit (API non démarrée, mauvaise URL...)
+        alert("Erreur de réseau ou serveur.");
+        console.error("Erreur réseau :", err); // Affiche l'erreur dans la console
+      }
+    }
+  </script>
+</body>
+</html>
